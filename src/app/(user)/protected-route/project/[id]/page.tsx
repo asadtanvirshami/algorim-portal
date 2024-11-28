@@ -12,7 +12,7 @@ async function page({ params }: { params: { id: string } }) {
 
   // Prefetch the first page of data
   await queryClient.prefetchQuery({
-    queryKey: ["projects", params.id],
+    queryKey: ["projects", params?.id],
     queryFn: () => projectApi.getOne(params?.id),
   });
 
@@ -20,7 +20,7 @@ async function page({ params }: { params: { id: string } }) {
     <>
       <HydrationBoundary state={dehydrate(queryClient)}>
         {/* <Project id={params.id} /> */}
-        <ProjectDashboard id={params.id} />
+        <ProjectDashboard id={params?.id} />
       </HydrationBoundary>
     </>
   );

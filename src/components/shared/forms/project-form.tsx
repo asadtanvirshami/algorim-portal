@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 // Define the validation schema using Zod
 const formSchema = z.object({
@@ -46,6 +48,8 @@ const formSchema = z.object({
 });
 
 export function ProjectForm() {
+  const data = useSelector((state) => state.form.data);
+  const edit = useSelector((state) => state.form.edit);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,18 +62,18 @@ export function ProjectForm() {
       deadline: "",
       status: "",
       approved: false,
-      active: true,
+      active: false,
     },
   });
+  useEffect(() => {
+    if (edit) form.reset(data);
+  }, [edit, data]);
 
   const onSubmit = async (values) => {
     try {
-      // Here you would typically call your API to create or update a project
       console.log("Form Submitted", values);
-      // await createOrUpdateProject(values); // Uncomment and implement this function
     } catch (error) {
       console.error("Error submitting form", error);
-      // Handle error appropriately
     }
   };
 
@@ -195,7 +199,10 @@ export function ProjectForm() {
             <FormItem>
               <FormLabel>Approved</FormLabel>
               <FormControl>
-                <Switch {...field} />
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
               </FormControl>
               <FormDescription>
                 Check if the project is approved.
@@ -211,7 +218,10 @@ export function ProjectForm() {
             <FormItem>
               <FormLabel>Active</FormLabel>
               <FormControl>
-                <Switch {...field} />
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
               </FormControl>
               <FormDescription>
                 Check if the project is currently active.

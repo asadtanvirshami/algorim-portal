@@ -9,18 +9,19 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 // Define the validation schema using Zod
 const linkSchema = z.object({
-  url: z.string().url({ message: "Must be a valid URL" }),
-  description: z.string().min(1, { message: "Description is required" }),
+  key: z.string().min(1, { message: "Key is required" }),
+  value: z.string().min(1, { message: "Value is required" }),
 });
 
 const projectInfoSchema = z.object({
@@ -45,10 +46,11 @@ const projectInfoSchema = z.object({
 });
 
 export function ProjectInfoForm() {
+  const { data, edit } = useSelector((state) => state.form);
   const form = useForm({
     resolver: zodResolver(projectInfoSchema),
     defaultValues: {
-      links: [{ url: "", description: "" }],
+      links: [{ key: "", value: "" }], // Default empty key-value pair
       meeting_link: "",
       project_manager_email: "",
       project_manager_name: "",
@@ -63,17 +65,42 @@ export function ProjectInfoForm() {
     control: form.control,
     name: "links",
   });
+  useEffect(() => {
+    if (edit && data.projectInfos) {
+      const tempLinks = data.projectInfos[0].links.flatMap((link: any) =>
+        Object.keys(link).map((key) => ({
+          key: key, // Extract key
+          value: link[key], // Extract value
+        }))
+      );
 
-  const onSubmit = async (values) => {
+      form.reset({
+        ...data.projectInfos[0],
+        links: tempLinks,
+      });
+      fields.push(...tempLinks);
+    }
+  }, [form, edit, data]);
+
+  const onSubmit = async (values: any) => {
     try {
-      // Here you would typically call your API to create or update project info
-      console.log("Form Submitted", values);
-      // await createOrUpdateProjectInfo(values); // Uncomment and implement this function
+      // Convert the 'links' array into an array of objects where each object has one key-value pair
+      const transformedLinks = values.links.map((link: any) => ({
+        [link.key]: link.value,
+      }));
+
+      console.log("Form Submitted", {
+        ...values,
+        links: transformedLinks, // Adding the transformed links data
+      });
+
+      // Handle your API submission logic here
     } catch (error) {
       console.error("Error submitting form", error);
-      // Handle error appropriately
     }
   };
+
+  console.log(fields);
 
   return (
     <Form {...form}>
@@ -177,51 +204,67 @@ export function ProjectInfoForm() {
             </FormItem>
           )}
         />
-        <Seperator />
-        {fields.map((field, index) => (
-          <div key={field.id}>
-            <FormField
-              control={form.control}
-              name={`links.${index}.url`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Link URL {index + 1}</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter link URL" {...field} />
-                  </FormControl>
-                  <FormMessage>
-                    {form.formState.errors.links?.[index]?.url?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={`links.${index}.description`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Link Description {index + 1}</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter link description" {...field} />
-                  </FormControl>
-                  <FormMessage>
-                    {form.formState.errors.links?.[index]?.description?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
-            <Button type="button" onClick={() => remove(index)}>
-              Remove Link
-            </Button>
+        <Separator />
+        <FormField
+          control={form.control}
+          name="meeting_link"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Meeting Link</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter meeting link" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Separator />
+
+        {/* Dynamically render each link */}
+        {fields.map((link, index) => (
+          <div key={link.id} className="space-y-4">
+            <FormLabel>Link {index + 1}</FormLabel>
+
+            <div className="flex gap-4">
+              <FormField
+                control={form.control}
+                name={`links.${index}.key`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input placeholder="Enter key" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name={`links.${index}.value`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input placeholder="Enter value" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="button"
+                onClick={() => remove(index)}
+                className="text-red-500 bg-white"
+              >
+                Remove Link
+              </Button>
+            </div>
           </div>
         ))}
-        <Button
-          type="button"
-          onClick={() => append({ url: "", description: "" })}
-        >
-          Add Another Link
-        </Button>
-        <Button type="submit">Submit</Button>
+        <div className="space-x-5">
+          <Button type="button" onClick={() => append({ key: "", value: "" })}>
+            Add Link
+          </Button>
+
+          <Button type="submit">Submit</Button>
+        </div>
       </form>
     </Form>
   );

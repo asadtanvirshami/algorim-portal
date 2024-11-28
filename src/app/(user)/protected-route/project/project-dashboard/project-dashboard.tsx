@@ -9,6 +9,9 @@ import { ProjectInfoForm } from "@/components/shared/forms/projectinfo-form";
 import { useDispatch, useSelector } from "react-redux";
 
 import io from "socket.io-client";
+import { setForm, toggleEdit } from "@/redux/actions/form-action";
+import ServiceForm from "@/components/shared/forms/service-form";
+import MilestoneForm from "@/components/shared/forms/milestone-form";
 type Tab = {
   label: string;
   component: React.ReactNode;
@@ -18,20 +21,19 @@ const ProjectDashboard = ({ id }: { id: string }) => {
   const dispatch = useDispatch();
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
   const { data: project, isLoading, error } = useProject(id);
-  const state = useSelector((state) => state.projects);
+  const state = useSelector((state) => state);
   const tabs: Tab[] = [
     { label: "Detail", component: <ProjectForm /> },
     { label: "Information", component: <ProjectInfoForm /> },
-    { label: "Service", component: <ProjectForm /> },
+    { label: "Service", component: <ServiceForm /> },
     { label: "Document", component: <ProjectForm /> },
-    // { label: "Milestone", component: <MilestoneForm /> },
-    // { label: "User", component: <MilestoneForm /> },
+    { label: "Milestone", component: <MilestoneForm /> },
   ];
 
   useEffect(() => {
     if (project) {
-      // dispatch(setAllValues(project));
-  
+      dispatch(setForm(project));
+      dispatch(toggleEdit())
     }
   }, [dispatch, project]);
   console.log("State after dispatch:", state); // Log the state after dispatch

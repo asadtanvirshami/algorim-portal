@@ -1,7 +1,10 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { toggleEdit } from "@/redux/actions/form-action";
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -12,18 +15,28 @@ export type Payment = {
   email: string;
 };
 
-export const columns: ColumnDef<Payment>[] = [
-  {
-    accessorKey: "id",
-    header: "Link",
-    cell: ({ row }) => (
+const ViewButton = ({ row }) => {
+  const dispatch = useDispatch();
+  return (
+    <Button  onClick={() => dispatch(toggleEdit())}>
       <Link
         href={`/protected-route/project/${row.getValue("id")}`}
+       
         className="capitalize"
       >
         View
       </Link>
-    ),
+    </Button>
+  );
+};
+
+export const columns: ColumnDef<Payment>[] = [
+  {
+    accessorKey: "id",
+    header: "Link",
+    cell: ({ row }) => {
+      return <ViewButton row={row} />;
+    },
   },
   {
     header: "ID",
