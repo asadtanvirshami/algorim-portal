@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -16,8 +16,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
+import { CrossCircledIcon, CheckCircledIcon } from "@radix-ui/react-icons";
 
 // Define the validation schema using Zod
 const formSchema = z.object({
@@ -48,26 +49,30 @@ const formSchema = z.object({
 });
 
 export function ProjectForm() {
-  const data = useSelector((state) => state.form.data);
-  const edit = useSelector((state) => state.form.edit);
+  const { project } = useSelector((state) => state.project);
+
+  const defaultValues = useMemo(() => {
+    return project
+      ? project
+      : {
+          id: "",
+          title: "",
+          description: "",
+          budget: 0,
+          start_date: "",
+          end_date: "",
+          deadline: "",
+          status: "",
+          approved: false,
+          active: false,
+        };
+  }, [project]);
+
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      id: "", // Optional, can be set if editing an existing project
-      title: "",
-      description: "",
-      budget: 0,
-      start_date: "",
-      end_date: "",
-      deadline: "",
-      status: "",
-      approved: false,
-      active: false,
-    },
+    defaultValues: defaultValues,
+    values: project,
   });
-  useEffect(() => {
-    if (edit) form.reset(data);
-  }, [edit, data]);
 
   const onSubmit = async (values) => {
     try {
@@ -80,156 +85,186 @@ export function ProjectForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter project title" {...field} />
-              </FormControl>
-              <FormDescription>
-                This is the title of your project.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter project description" {...field} />
-              </FormControl>
-              <FormDescription>
-                Provide a brief description of your project.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="budget"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Budget</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Enter project budget"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>Set a budget for your project.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="start_date"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Start Date</FormLabel>
-              <FormControl>
-                <Input type="date" {...field} />
-              </FormControl>
-              <FormDescription>
-                Select the start date for your project.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="end_date"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>End Date</FormLabel>
-              <FormControl>
-                <Input type="date" {...field} />
-              </FormControl>
-              <FormDescription></FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="deadline"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Deadline</FormLabel>
-              <FormControl>
-                <Input type="date" {...field} />
-              </FormControl>
-              <FormDescription>
-                Set a deadline for your project.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="status"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Status</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter project status" {...field} />
-              </FormControl>
-              <FormDescription>
-                Specify the current status of your project.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="approved"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Approved</FormLabel>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <FormDescription>
-                Check if the project is approved.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="active"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Active</FormLabel>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <FormDescription>
-                Check if the project is currently active.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-2">
+          <div className="p-3 space-y-6">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter project title" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    This is the title of your project.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter project description" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Provide a brief description of your project.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="budget"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Budget</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter project budget"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Set a budget for your project.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="start_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Start Date</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Select the start date for your project.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="end_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>End Date</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormDescription></FormDescription>
+                  <FormDescription>
+                    Select the end date for your project.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="deadline"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Deadline</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Set a deadline for your project.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="p-3 space-y-6">
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter project status" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Specify the current status of your project.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="approved"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-4">
+                    <FormLabel>Approved</FormLabel>
+                    <FormControl>
+                      <Switch
+                        className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-400"
+                        checkedIcon={
+                          <CheckCircledIcon className="w-5 h-5 text-green-500 " />
+                        } // change the icons based on your need
+                        uncheckedIcon={
+                          <CrossCircledIcon className="w-5 h-5 text-red-500 " />
+                        }
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormDescription>
+                    Check if the project is approved.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="active"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-4">
+                    <FormLabel>Active</FormLabel>
+                    <FormControl>
+                      <Switch
+                        className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-400"
+                        checkedIcon={
+                          <CheckCircledIcon className="w-5 h-5 text-green-500 " />
+                        } // change the icons based on your need
+                        uncheckedIcon={
+                          <CrossCircledIcon className="w-5 h-5 text-red-500 " />
+                        }
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormDescription>
+                    Check if the project is currently active.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
         <Button type="submit">Submit</Button>
       </form>
     </Form>

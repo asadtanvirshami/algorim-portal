@@ -14,8 +14,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input"; // Ensure you import your Input component
-import { useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useMemo } from "react";
 
 // Define the validation schema using Zod
 const serviceSchema = z.object({
@@ -29,24 +29,25 @@ const formSchema = z.object({
 });
 
 const ServiceForm = () => {
-  const data = useSelector((state) => state.form.data);
-  const edit = useSelector((state) => state.form.edit);
+  const { services } = useSelector((state) => state.project);
+
+  const defaultValues = useMemo(() => {
+    return services ? services : [{ id: "", service_name: "" }];
+  }, [services]);
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      services: [{ id: "", service_name: "" }],
+      service: defaultValues,
       project: 0,
+      values: services,
     },
   });
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "services",
+    name: "service",
   });
-
-  useEffect(() => {
-    if (edit) form.reset(data);
-  }, [edit, data]);
 
   function onSubmit(values) {
     console.log(values); // Handle form submission
@@ -60,7 +61,7 @@ const ServiceForm = () => {
             <FormField
               key={item.id} // Use a unique key
               control={form.control}
-              name={`services.${index}.service_name`} // Dynamic name
+              name={`service.${index}.service_name`} // Dynamic name
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Service</FormLabel>
@@ -85,7 +86,7 @@ const ServiceForm = () => {
         >
           Add Service
         </Button>
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Save</Button>
       </form>
     </Form>
   );

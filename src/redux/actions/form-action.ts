@@ -1,37 +1,58 @@
+// actions.ts
 import {
-    SET_FORM,
-    UPDATE_FORM_FIELD,
-    ADD_ITEM,
-    DELETE_ITEM,
-    TOGGLE_EDIT,
-  } from '../constants/form-constant';
-  
-  // Set entire form data
-  export const setForm = (payload: any) => ({
-    type: SET_FORM,
-    payload,
-  });
-  
-  // Update a specific form field
-  export const updateFormField = (field: string, value: any) => ({
-    type: UPDATE_FORM_FIELD,
-    payload: { field, value },
-  });
-  
-  // Add an item to a list (e.g., links or services)
-  export const addItem = (item: any) => ({
-    type: ADD_ITEM,
-    payload: item,
-  });
-  
-  // Delete an item by index
-  export const deleteItem = (index: number) => ({
-    type: DELETE_ITEM,
-    payload: index,
-  });
-  
-  // Toggle edit mode
-  export const toggleEdit = () => ({
-    type: TOGGLE_EDIT,
-  });
-  
+  UPDATE_PROJECT,
+  UPDATE_SERVICES,
+  UPDATE_MILESTONES,
+  UPDATE_DETAILS,
+  UPDATE_DOCUMENTS,
+  DELETE_ITEMS,
+  TOGGLE_EDIT,
+  SET_ALL,
+  UpdateProjectDto,
+  ProjectActionTypes,
+} from "../constants/form-constant";
+
+export const updateProject = (
+  project: Record<string, any>
+): ProjectActionTypes => ({
+  type: UPDATE_PROJECT,
+  payload: project,
+});
+
+export const updateServices = (services: any[]): ProjectActionTypes => ({
+  type: UPDATE_SERVICES,
+  payload: services,
+});
+
+export const updateMilestones = (milestones: any[]): ProjectActionTypes => ({
+  type: UPDATE_MILESTONES,
+  payload: milestones,
+});
+
+export const updateDetails = (details: any[]): ProjectActionTypes => ({
+  type: UPDATE_DETAILS,
+  payload: details,
+});
+
+export const updateDocuments = (documents: any[]): ProjectActionTypes => ({
+  type: UPDATE_DOCUMENTS,
+  payload: documents,
+});
+
+export const deleteItems = (toDelete: {
+  services: number[];
+  milestones: number[];
+  details: number[];
+  documents: number[];
+}): ProjectActionTypes => ({
+  type: DELETE_ITEMS,
+  payload: toDelete,
+});
+
+export const setAll = (data: UpdateProjectDto): ProjectActionTypes => ({
+  type: SET_ALL,
+  payload: data,
+});
+export const toggleEdit = () => ({
+  type: TOGGLE_EDIT,
+});

@@ -15,8 +15,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useEffect } from "react";
+import { memo, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
+import { PlusCircle, XCircle } from "lucide-react";
 
 // Define the validation schema using Zod
 const linkSchema = z.object({
@@ -45,42 +46,42 @@ const projectInfoSchema = z.object({
     .positive({ message: "Project ID must be a positive integer" }),
 });
 
-export function ProjectInfoForm() {
-  const { data, edit } = useSelector((state) => state.form);
+const ProjectInfoForm = () => {
+  const { details } = useSelector((state) => state.project);
+
+  const defaultValues = useMemo(() => {
+    return details[0]
+      ? {
+          ...details[0],
+          links: details[0].links.flatMap((link: any) =>
+            Object.keys(link).map((key) => ({
+              key: key, // Extract key
+              value: link[key], // Extract value
+            }))
+          ),
+        }
+      : {
+          links: [{ key: "", value: "" }],
+          meeting_link: "",
+          project_manager_email: "",
+          project_manager_name: "",
+          project_manager_phone: "",
+          completion_percentage: 0,
+          note: "",
+          project: 0,
+        };
+  }, [details]);
+
   const form = useForm({
     resolver: zodResolver(projectInfoSchema),
-    defaultValues: {
-      links: [{ key: "", value: "" }], // Default empty key-value pair
-      meeting_link: "",
-      project_manager_email: "",
-      project_manager_name: "",
-      project_manager_phone: "",
-      completion_percentage: 0,
-      note: "",
-      project: 0,
-    },
+    defaultValues: defaultValues,
+    values: details[0],
   });
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "links",
   });
-  useEffect(() => {
-    if (edit && data.projectInfos) {
-      const tempLinks = data.projectInfos[0].links.flatMap((link: any) =>
-        Object.keys(link).map((key) => ({
-          key: key, // Extract key
-          value: link[key], // Extract value
-        }))
-      );
-
-      form.reset({
-        ...data.projectInfos[0],
-        links: tempLinks,
-      });
-      fields.push(...tempLinks);
-    }
-  }, [form, edit, data]);
 
   const onSubmit = async (values: any) => {
     try {
@@ -105,167 +106,169 @@ export function ProjectInfoForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="meeting_link"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Meeting Link</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter meeting link" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="project_manager_email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Project Manager Email</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter project manager email" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="project_manager_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Project Manager Name</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter project manager name" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="project_manager_phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Project Manager Phone</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter project manager phone" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="completion_percentage"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Completion Percentage</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Enter completion percentage"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="note"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Note</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter any notes" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="project"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Project ID</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Enter project ID"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Separator />
-        <FormField
-          control={form.control}
-          name="meeting_link"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Meeting Link</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter meeting link" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Separator />
-
-        {/* Dynamically render each link */}
-        {fields.map((link, index) => (
-          <div key={link.id} className="space-y-4">
-            <FormLabel>Link {index + 1}</FormLabel>
-
-            <div className="flex gap-4">
-              <FormField
-                control={form.control}
-                name={`links.${index}.key`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input placeholder="Enter key" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`links.${index}.value`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input placeholder="Enter value" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+        <div className="grid grid-cols-2 gap-4 p-3 space-y-6 ">
+          <div className="space-y-6">
+            <FormField
+              control={form.control}
+              name="meeting_link"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Meeting Link</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter meeting link" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="project_manager_email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project Manager Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter project manager email"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="project_manager_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project Manager Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter project manager name"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="project_manager_phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project Manager Phone</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter project manager phone"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="completion_percentage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Completion Percentage</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter completion percentage"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="note"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Note</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter any notes" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="project"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project ID</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter project ID"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="w-fit space-y-4">
+            {/* Dynamically render each link */}
+            <div className="space-x-5 float-right w-fit">
               <Button
-                type="button"
-                onClick={() => remove(index)}
-                className="text-red-500 bg-white"
+                onClick={() => append({ key: "", value: "" })}
+                className="bg-white text-green-400 hover:bg-white"
               >
-                Remove Link
+                <PlusCircle className="text-green-500 cursor-pointer" />
+                Add
               </Button>
             </div>
-          </div>
-        ))}
-        <div className="space-x-5">
-          <Button type="button" onClick={() => append({ key: "", value: "" })}>
-            Add Link
-          </Button>
 
-          <Button type="submit">Submit</Button>
+            {fields.map((link, index) => (
+              <div key={link.id} className="space-y-4">
+                <FormLabel>Link {index + 1}</FormLabel>
+                <div className="flex gap-4">
+                  <FormField
+                    control={form.control}
+                    name={`links.${index}.key`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="Enter key" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`links.${index}.value`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="Enter value" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <XCircle
+                    className="text-red-500 cursor-pointer"
+                    onClick={() => remove(index)}
+                  />
+                </div>
+              </div>
+            ))}
+
+            <Button type="submit" variant={"outline"} >Save</Button>
+          </div>
         </div>
       </form>
     </Form>
   );
-}
+};
+
+export default memo(ProjectInfoForm);

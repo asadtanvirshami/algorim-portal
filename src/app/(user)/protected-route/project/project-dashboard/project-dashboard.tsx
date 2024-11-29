@@ -2,53 +2,22 @@
 
 import { projectApi } from "@/services/project/project-api";
 import { useQuery } from "@tanstack/react-query";
-import ProjectTab from "../project-tab";
-import { useEffect, useState } from "react";
-import { ProjectForm } from "@/components/shared/forms/project-form";
-import { ProjectInfoForm } from "@/components/shared/forms/projectinfo-form";
 import { useDispatch, useSelector } from "react-redux";
 
 import io from "socket.io-client";
-import { setForm, toggleEdit } from "@/redux/actions/form-action";
-import ServiceForm from "@/components/shared/forms/service-form";
-import MilestoneForm from "@/components/shared/forms/milestone-form";
-type Tab = {
-  label: string;
-  component: React.ReactNode;
-};
+import FormSection from "./form-section";
+import { useEffect } from "react";
+import { toggleEdit } from "@/redux/actions/form-action";
 
 const ProjectDashboard = ({ id }: { id: string }) => {
-  const dispatch = useDispatch();
-  const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
   const { data: project, isLoading, error } = useProject(id);
-  const state = useSelector((state) => state);
-  const tabs: Tab[] = [
-    { label: "Detail", component: <ProjectForm /> },
-    { label: "Information", component: <ProjectInfoForm /> },
-    { label: "Service", component: <ServiceForm /> },
-    { label: "Document", component: <ProjectForm /> },
-    { label: "Milestone", component: <MilestoneForm /> },
-  ];
-
-  useEffect(() => {
-    if (project) {
-      dispatch(setForm(project));
-      dispatch(toggleEdit())
-    }
-  }, [dispatch, project]);
-  console.log("State after dispatch:", state); // Log the state after dispatch
 
   if (isLoading) return <p>Loading project...</p>;
   if (error) return <p>Failed to load project. Please try again later.</p>;
 
   return (
     <div className="h-screen p-5">
-      <ProjectTab
-        activeTabIndex={activeTabIndex}
-        setActiveTabIndex={setActiveTabIndex}
-        tabs={tabs}
-      />
-      {project && tabs[activeTabIndex].component}
+      <div>{!isLoading && <FormSection project={project} />}</div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -24,27 +24,35 @@ const milestoneSchema = z.object({
 
 const formSchema = z.object({
   milestone: z.array(milestoneSchema),
-  project: z.number().min(1, { message: "Value is required" }).optional(),
 });
 
 const MilestoneForm = () => {
-  const data = useSelector((state) => state.form.data);
-  const edit = useSelector((state) => state.form.edit);
+  const {
+    milestones: data,
+    project,
+    edit,
+  } = useSelector((state) => state.project);
+
+  const defaultValues = useMemo(() => {
+    return data
+      ? data
+      : [
+          {
+            id: "",
+            title: "",
+            description: "",
+            dueDate: "",
+            isCompleted: "",
+            amount: "",
+          },
+        ];
+  }, [data]);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      milestones: [
-        {
-          id: "",
-          title: "",
-          description: "",
-          dueDate: "",
-          isCompleted: "",
-          amount: "",
-        },
-      ],
-      project: 0,
+      milestones: defaultValues,
+      values: data,
     },
   });
 
@@ -52,10 +60,7 @@ const MilestoneForm = () => {
     control: form.control,
     name: "milestones",
   });
-
-  useEffect(() => {
-    if (edit) form.reset(data);
-  }, [edit, data]);
+  console.log(data);
 
   const onSubmit = (values) => {
     console.log(values);

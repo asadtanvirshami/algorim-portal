@@ -2,7 +2,7 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer, Persistor } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import userReducer from "./reducers/user-reducer";
-import { formReducer } from "./reducers/form-reducer";
+import  projectReducer  from "./reducers/form-reducer";
 
 // Persist config for redux-persist
 const persistConfig = {
@@ -15,7 +15,7 @@ const persistedUserReducer = persistReducer(persistConfig, userReducer);
 // Root reducer
 const rootReducer = combineReducers({
   user: persistedUserReducer,
-  form: formReducer,
+  project: projectReducer,
 });
 
 // Configuring the Redux store
