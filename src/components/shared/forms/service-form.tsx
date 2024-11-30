@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input"; // Ensure you import your Input component
 import { useSelector } from "react-redux";
 import { useMemo } from "react";
+import { PlusCircle, XCircle } from "lucide-react";
 
 // Define the validation schema using Zod
 const serviceSchema = z.object({
@@ -55,7 +56,17 @@ const ServiceForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 p-6">
+        <div className="flex items-center gap-8 space-x-5 w-fit">
+          <h1>Project Services</h1>
+          <Button
+            onClick={() => append({ key: "", value: "" })}
+            className="bg-white text-green-400 hover:bg-white"
+          >
+            <PlusCircle className="text-green-500 cursor-pointer" />
+            Add
+          </Button>
+        </div>
         {fields.map((item, index) => {
           return (
             <FormField
@@ -63,29 +74,26 @@ const ServiceForm = () => {
               control={form.control}
               name={`service.${index}.service_name`} // Dynamic name
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Service</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter service" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    This is the service of your project.
-                  </FormDescription>
-                  <FormMessage />
-                  <Button type="button" onClick={() => remove(index)}>
-                    Remove
-                  </Button>
-                </FormItem>
+                <div className="flex items-center gap-4">
+                  <FormItem>
+                    <FormLabel>Service {index + 1}</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter service" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      This is the service of your project.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                  <XCircle
+                    className="text-red-500 cursor-pointer"
+                    onClick={() => remove(index)}
+                  />
+                </div>
               )}
             />
           );
         })}
-        <Button
-          type="button"
-          onClick={() => append({ id: "", service_name: "" })}
-        >
-          Add Service
-        </Button>
         <Button type="submit">Save</Button>
       </form>
     </Form>

@@ -12,6 +12,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useSelector } from "react-redux";
+import { PlusCircle, SaveIcon, XCircle } from "lucide-react";
 
 const milestoneSchema = z.object({
   id: z.string().min(1, { message: "Key is required" }),
@@ -70,74 +71,8 @@ const MilestoneForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        {fields.map((field, index) => (
-          <div key={field.id}>
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input {...form.register(`milestones.${index}.title`)} />
-              </FormControl>
-              <FormMessage>
-                {form.formState.errors?.milestones?.[index]?.title?.message}
-              </FormMessage>
-            </FormItem>
-
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Input {...form.register(`milestones.${index}.description`)} />
-              </FormControl>
-              <FormMessage>
-                {
-                  form.formState.errors?.milestones?.[index]?.description
-                    ?.message
-                }
-              </FormMessage>
-            </FormItem>
-
-            <FormItem>
-              <FormLabel>Due Date</FormLabel>
-              <FormControl>
-                <Input
-                  type="date"
-                  {...form.register(`milestones.${index}.dueDate`)}
-                />
-              </FormControl>
-              <FormMessage>
-                {form.formState.errors?.milestones?.[index]?.dueDate?.message}
-              </FormMessage>
-            </FormItem>
-
-            <FormItem>
-              <FormLabel>Is Completed</FormLabel>
-              <FormControl>
-                <Input {...form.register(`milestones.${index}.isCompleted`)} />
-              </FormControl>
-              <FormMessage>
-                {
-                  form.formState.errors?.milestones?.[index]?.isCompleted
-                    ?.message
-                }
-              </FormMessage>
-            </FormItem>
-
-            <FormItem>
-              <FormLabel>Amount</FormLabel>
-              <FormControl>
-                <Input {...form.register(`milestones.${index}.amount`)} />
-              </FormControl>
-              <FormMessage>
-                {form.formState.errors?.milestones?.[index]?.amount?.message}
-              </FormMessage>
-            </FormItem>
-
-            <Button type="button" onClick={() => remove(index)}>
-              Remove Milestone
-            </Button>
-          </div>
-        ))}
-
-        <Button
+        <div className="flex justify-end gap-5 mb-8  ">
+          {/* <Button
           type="button"
           onClick={() =>
             append({
@@ -149,11 +84,97 @@ const MilestoneForm = () => {
               amount: "",
             })
           }
-        >
-          Add Milestone
-        </Button>
+        > */}
+          <Button
+            onClick={() => append({ key: "", value: "" })}
+            className="bg-white text-green-400 hover:bg-white"
+          >
+            <PlusCircle className="text-green-500 cursor-pointer" />
+            Add
+          </Button>
+          <Button
+            type="submit"
+            className="bg-gradient-to-tr from-orange-300 to-orange-500 "
+          >
+            Save
+            <SaveIcon />{" "}
+          </Button>
+        </div>
+        {fields.map((field, index) => (
+          <div key={field.id} className=" h--96 overflow-auto">
+            <h1>{"Milestone" + (index + 1)}</h1>
+            <div className="flex float-right ">
+              <XCircle
+                className="text-red-500 cursor-pointer "
+                onClick={() => remove(index)}
+              />
+            </div>
+            <div className="space-y-4">
+              <FormItem>
+                <FormLabel>Title</FormLabel>
+                <FormControl>
+                  <Input {...form.register(`milestones.${index}.title`)} />
+                </FormControl>
+                <FormMessage>
+                  {form.formState.errors?.milestones?.[index]?.title?.message}
+                </FormMessage>
+              </FormItem>
 
-        <Button type="submit">Submit </Button>
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Input
+                    {...form.register(`milestones.${index}.description`)}
+                  />
+                </FormControl>
+                <FormMessage>
+                  {
+                    form.formState.errors?.milestones?.[index]?.description
+                      ?.message
+                  }
+                </FormMessage>
+              </FormItem>
+
+              <FormItem>
+                <FormLabel>Due Date</FormLabel>
+                <FormControl>
+                  <Input
+                    type="date"
+                    {...form.register(`milestones.${index}.dueDate`)}
+                  />
+                </FormControl>
+                <FormMessage>
+                  {form.formState.errors?.milestones?.[index]?.dueDate?.message}
+                </FormMessage>
+              </FormItem>
+
+              <FormItem>
+                <FormLabel>Is Completed</FormLabel>
+                <FormControl>
+                  <Input
+                    {...form.register(`milestones.${index}.isCompleted`)}
+                  />
+                </FormControl>
+                <FormMessage>
+                  {
+                    form.formState.errors?.milestones?.[index]?.isCompleted
+                      ?.message
+                  }
+                </FormMessage>
+              </FormItem>
+
+              <FormItem>
+                <FormLabel>Amount</FormLabel>
+                <FormControl>
+                  <Input {...form.register(`milestones.${index}.amount`)} />
+                </FormControl>
+                <FormMessage>
+                  {form.formState.errors?.milestones?.[index]?.amount?.message}
+                </FormMessage>
+              </FormItem>
+            </div>
+          </div>
+        ))}
       </form>
     </Form>
   );
