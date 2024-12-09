@@ -38,19 +38,19 @@ const projectReducer = (state = initialState, action) => {
     case UPDATE_SERVICES:
       return {
         ...state,
-        services: [...state.services, ...action.payload],
+        services: action.payload,
       };
 
     case UPDATE_MILESTONES:
       return {
         ...state,
-        milestones: [...state.milestones, ...action.payload],
+        milestones: action.payload,
       };
 
     case UPDATE_DETAILS:
       return {
         ...state,
-        details: [...state.details, ...action.payload],
+        details: action.payload,
       };
 
     case UPDATE_DOCUMENTS:

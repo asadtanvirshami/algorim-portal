@@ -75,7 +75,7 @@ export default function MainLayout({
               </Breadcrumb>
             </header>
             <div className="flex flex-1 flex-col gap-4 p-4">
-              <div className="flex-1  overflow-auto p-5 relative rounded-xl bg-card shadow-lg ">
+              <div className="flex-1 min-h-[2500px] p-5 relative rounded-xl bg-card shadow-lg ">
                 {children}
               </div>
             </div>

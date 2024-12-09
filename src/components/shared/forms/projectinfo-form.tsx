@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { memo, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { PlusCircle, XCircle } from "lucide-react";
+import { PlusCircle, Save, XCircle } from "lucide-react";
 
 // Define the validation schema using Zod
 const linkSchema = z.object({
@@ -106,6 +106,12 @@ const ProjectInfoForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <div className="flex justify-end">
+          <Button type="submit" className="bg-gray-800">
+            Save
+            <Save />
+          </Button>
+        </div>
         <div className="grid grid-cols-2 gap-4 p-3 space-y-6 ">
           <div className="space-y-6">
             <FormField
@@ -217,53 +223,58 @@ const ProjectInfoForm = () => {
               )}
             />
           </div>
-          <div className="w-fit space-y-4">
-            {/* Dynamically render each link */}
-            <div className="space-x-5 float-right w-fit">
-              <Button
-                onClick={() => append({ key: "", value: "" })}
-                className="bg-white text-green-400 hover:bg-white"
-              >
-                <PlusCircle className="text-green-500 cursor-pointer" />
-                Add
-              </Button>
-            </div>
-
-            {fields.map((link, index) => (
-              <div key={link.id} className="space-y-4">
-                <FormLabel>Link {index + 1}</FormLabel>
-                <div className="flex gap-4">
-                  <FormField
-                    control={form.control}
-                    name={`links.${index}.key`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input placeholder="Enter key" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={`links.${index}.value`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input placeholder="Enter value" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <XCircle
-                    className="text-red-500 cursor-pointer"
-                    onClick={() => remove(index)}
-                  />
+          <div>
+            <div className="space-x-5  w-fit">
+              <div className="flex justify-end mb-5 space-x-5 ">
+                <Button
+                  onClick={() => append({ key: "", value: "" })}
+                  className="bg-white text-green-400 hover:bg-white"
+                >
+                  <PlusCircle className="text-green-500 cursor-pointer" />
+                  Add
+                </Button>
+              </div>
+              <div className=" ">
+                {/* Dynamically render each link */}
+                <div className="overflow-auto max-h-[600px] space-y-4 border rounded-lg p-4">
+                  {fields.map((link, index) => (
+                    <div key={link.id} className="space-y-4">
+                      <FormLabel className="font-semibold">
+                        Link {index + 1}
+                      </FormLabel>
+                      <div className="flex gap-4">
+                        <FormField
+                          control={form.control}
+                          name={`links.${index}.key`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input placeholder="Enter key" {...field} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`links.${index}.value`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input placeholder="Enter value" {...field} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        <XCircle
+                          className="text-red-500 cursor-pointer"
+                          onClick={() => remove(index)}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
-
-            <Button type="submit" variant={"outline"} >Save</Button>
+            </div>
           </div>
         </div>
       </form>

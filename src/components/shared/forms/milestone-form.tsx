@@ -92,89 +92,94 @@ const MilestoneForm = () => {
             <PlusCircle className="text-green-500 cursor-pointer" />
             Add
           </Button>
-          <Button
-            type="submit"
-            className="bg-gradient-to-tr from-orange-300 to-orange-500 "
-          >
+          <Button type="submit" className="bg-gray-800">
             Save
-            <SaveIcon />{" "}
+            <SaveIcon />
           </Button>
         </div>
-        {fields.map((field, index) => (
-          <div key={field.id} className=" h--96 overflow-auto">
-            <h1>{"Milestone" + (index + 1)}</h1>
-            <div className="flex float-right ">
-              <XCircle
-                className="text-red-500 cursor-pointer "
-                onClick={() => remove(index)}
-              />
+        <div className="overflow-auto max-h-[700px] rounded-lg p-4 space-y-5">
+          {fields.map((field, index) => (
+            <div key={field.id} className="bg-card border rounded-lg p-3 ">
+              <h1 className="font-semibold">{"Milestone" + (index + 1)}</h1>
+              <div className="flex float-right ">
+                <XCircle
+                  className="text-red-500 cursor-pointer "
+                  onClick={() => remove(index)}
+                />
+              </div>
+              <div className="space-y-4">
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input {...form.register(`milestones.${index}.title`)} />
+                  </FormControl>
+                  <FormMessage>
+                    {form.formState.errors?.milestones?.[index]?.title?.message}
+                  </FormMessage>
+                </FormItem>
+
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...form.register(`milestones.${index}.description`)}
+                    />
+                  </FormControl>
+                  <FormMessage>
+                    {
+                      form.formState.errors?.milestones?.[index]?.description
+                        ?.message
+                    }
+                  </FormMessage>
+                </FormItem>
+
+                <FormItem>
+                  <FormLabel>Due Date</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      {...form.register(`milestones.${index}.dueDate`)}
+                    />
+                  </FormControl>
+                  <FormMessage>
+                    {
+                      form.formState.errors?.milestones?.[index]?.dueDate
+                        ?.message
+                    }
+                  </FormMessage>
+                </FormItem>
+
+                <FormItem>
+                  <FormLabel>Is Completed</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...form.register(`milestones.${index}.isCompleted`)}
+                    />
+                  </FormControl>
+                  <FormMessage>
+                    {
+                      form.formState.errors?.milestones?.[index]?.isCompleted
+                        ?.message
+                    }
+                  </FormMessage>
+                </FormItem>
+
+                <FormItem>
+                  <FormLabel>Amount</FormLabel>
+                  <FormControl>
+                    <Input {...form.register(`milestones.${index}.amount`)} />
+                  </FormControl>
+                  <FormMessage>
+                    {
+                      form.formState.errors?.milestones?.[index]?.amount
+                        ?.message
+                    }
+                  </FormMessage>
+                </FormItem>
+              </div>
             </div>
-            <div className="space-y-4">
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input {...form.register(`milestones.${index}.title`)} />
-                </FormControl>
-                <FormMessage>
-                  {form.formState.errors?.milestones?.[index]?.title?.message}
-                </FormMessage>
-              </FormItem>
-
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Input
-                    {...form.register(`milestones.${index}.description`)}
-                  />
-                </FormControl>
-                <FormMessage>
-                  {
-                    form.formState.errors?.milestones?.[index]?.description
-                      ?.message
-                  }
-                </FormMessage>
-              </FormItem>
-
-              <FormItem>
-                <FormLabel>Due Date</FormLabel>
-                <FormControl>
-                  <Input
-                    type="date"
-                    {...form.register(`milestones.${index}.dueDate`)}
-                  />
-                </FormControl>
-                <FormMessage>
-                  {form.formState.errors?.milestones?.[index]?.dueDate?.message}
-                </FormMessage>
-              </FormItem>
-
-              <FormItem>
-                <FormLabel>Is Completed</FormLabel>
-                <FormControl>
-                  <Input
-                    {...form.register(`milestones.${index}.isCompleted`)}
-                  />
-                </FormControl>
-                <FormMessage>
-                  {
-                    form.formState.errors?.milestones?.[index]?.isCompleted
-                      ?.message
-                  }
-                </FormMessage>
-              </FormItem>
-
-              <FormItem>
-                <FormLabel>Amount</FormLabel>
-                <FormControl>
-                  <Input {...form.register(`milestones.${index}.amount`)} />
-                </FormControl>
-                <FormMessage>
-                  {form.formState.errors?.milestones?.[index]?.amount?.message}
-                </FormMessage>
-              </FormItem>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </form>
     </Form>
   );

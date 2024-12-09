@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronsUpDown, GalleryVerticalEnd } from "lucide-react";
+import { Check, ChevronsUpDown, GalleryVerticalEnd, LogOut, Settings } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -54,8 +54,9 @@ export function VersionSwitcher({
               <DropdownMenuItem
                 key={version}
                 onSelect={() => setSelectedVersion(version)}
+                className=" flex justify-end"
               >
-                v{version}{" "}
+                {version} {version==="Logout" && <LogOut/>} {version==="Settings" && <Settings/>}
                 {version === selectedVersion && <Check className="ml-auto" />}
               </DropdownMenuItem>
             ))}

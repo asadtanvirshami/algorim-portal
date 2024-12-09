@@ -17,8 +17,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useEffect, useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CrossCircledIcon, CheckCircledIcon } from "@radix-ui/react-icons";
+import { Save } from "lucide-react";
+import { updateProject } from "@/redux/actions/form-action";
+import { UnknownAction } from "@reduxjs/toolkit";
 
 // Define the validation schema using Zod
 const formSchema = z.object({
@@ -50,7 +53,7 @@ const formSchema = z.object({
 
 export function ProjectForm() {
   const { project } = useSelector((state) => state.project);
-
+  const dispatch = useDispatch();
   const defaultValues = useMemo(() => {
     return project
       ? project
@@ -70,21 +73,33 @@ export function ProjectForm() {
 
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: defaultValues,
+    defaultValues: {
+      id: "",
+      title: "",
+      description: "",
+      budget: 0,
+      start_date: "",
+      end_date: "",
+      deadline: "",
+      status: "",
+      approved: false,
+      active: false,
+    },
     values: project,
   });
 
-  const onSubmit = async (values) => {
-    try {
-      console.log("Form Submitted", values);
-    } catch (error) {
-      console.error("Error submitting form", error);
-    }
+  const onChange = (data) => {
+    dispatch(updateProject(data)) as UnknownAction;
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onChange)} className="space-y-8">
+        <div className="flex justify-end">
+          <Button className="bg-gray-800" type="submit">
+            Save <Save />
+          </Button>
+        </div>
         <div className="grid grid-cols-2">
           <div className="p-3 space-y-6">
             <FormField
@@ -264,8 +279,6 @@ export function ProjectForm() {
             />
           </div>
         </div>
-
-        <Button type="submit">Submit</Button>
       </form>
     </Form>
   );
